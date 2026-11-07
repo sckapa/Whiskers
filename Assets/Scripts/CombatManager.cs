@@ -1,9 +1,11 @@
 using UnityEngine;
+using Whiskers.Combatants;
 
+// HP now lives in the combatants themselves, the combat manager only references who is fighting
 public class CombatManager : MonoBehaviour
 {
-    private int playerHealth;
-    private int enemyHealth;
+    private PlayerCombatant player;
+    private EnemyCombatant enemy;
 
     private void StartCombat()
     {
