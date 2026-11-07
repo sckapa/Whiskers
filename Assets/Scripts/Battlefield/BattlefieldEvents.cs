@@ -28,8 +28,19 @@ namespace Whiskers.Battlefield
         }
     }
 
-    // Only raised for switches between Active and AwaitingInteraction.
-    // Leaving the battlefield is reported by the removed and merged events instead.
+    public readonly struct BattlefieldObjectValueChangedEvent : IGameEvent
+    {
+        public BattlefieldObject Object { get; }
+        public int PreviousValue { get; }
+
+        public BattlefieldObjectValueChangedEvent(BattlefieldObject battlefieldObject, int previousValue)
+        {
+            Object = battlefieldObject;
+            PreviousValue = previousValue;
+        }
+    }
+
+    // Active <-> AwaitingInteraction only
     public readonly struct BattlefieldObjectStateChangedEvent : IGameEvent
     {
         public BattlefieldObject Object { get; }

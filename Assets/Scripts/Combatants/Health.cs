@@ -2,7 +2,7 @@ using System;
 
 namespace Whiskers.Combatants
 {
-    // Pure HP arithmetic. Returns the amount actually applied so callers can report exact numbers.
+    // Damage and healing return the amount actually applied
     public sealed class Health
     {
         private const int DeathThreshold = 0;
@@ -31,7 +31,7 @@ namespace Whiskers.Combatants
             return dealt;
         }
 
-        // The dead cannot be healed; reviving will be a separate explicit mechanic if it is ever needed
+        // Dead combatants can't be healed
         public int ApplyHealing(int amount)
         {
             ValidateAmount(amount);
@@ -46,7 +46,7 @@ namespace Whiskers.Combatants
             return healed;
         }
 
-        // Raising the maximum also raises current HP by the same amount, lowering it clamps current HP
+        // Raising max heals by the difference
         public void ChangeMax(int newMax)
         {
             ValidateMax(newMax);

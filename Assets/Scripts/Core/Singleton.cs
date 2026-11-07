@@ -2,8 +2,7 @@ using UnityEngine;
 
 namespace Whiskers.Core
 {
-    // Base for scene-level managers that must exist exactly once.
-    // Derived classes put their setup into OnAwake, which runs only for the surviving instance.
+    // Use OnAwake instead of Awake
     public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
     {
         public static T Instance { get; private set; }

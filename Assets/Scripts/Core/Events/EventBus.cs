@@ -50,8 +50,7 @@ namespace Whiskers.Core.Events
                 return;
             }
 
-            // Delegates are immutable, so listeners may safely subscribe or unsubscribe while this loop runs.
-            // Each listener is isolated so a single faulty handler cannot stop the others from receiving the event.
+            // Handlers can subscribe/unsubscribe while publishing
             foreach (Delegate handler in handlers.GetInvocationList())
             {
                 try
@@ -70,7 +69,7 @@ namespace Whiskers.Core.Events
             handlersByEventType.Clear();
         }
 
-        // Static state survives Enter Play Mode when domain reload is disabled, so stale listeners are dropped here
+        // For disabled domain reload
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetOnPlayModeEnter()
         {

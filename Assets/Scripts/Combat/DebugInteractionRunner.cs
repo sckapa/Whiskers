@@ -1,0 +1,109 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Whiskers.Battlefield;
+using Whiskers.Combat.Interactions;
+using Whiskers.Combat.Presentation;
+using Whiskers.Core.Events;
+
+namespace Whiskers.Combat
+{
+    // Temporary phase 3 until the interaction queue is done.
+    public sealed class DebugInteractionRunner : MonoBehaviour
+    {
+        [SerializeField] private bool runAfterEachRoll = true;
+        [SerializeField] private InteractionPresenter presenter = null;
+        [SerializeField, Min(0f)] private float delayBeforeResolving = 0.5f;
+
+        private void OnEnable()
+        {
+            EventBus.Subscribe<CombatRollsCompletedEvent>(OnRollsCompleted);
+        }
+
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<CombatRollsCompletedEvent>(OnRollsCompleted);
+        }
+
+        private void OnRollsCompleted(CombatRollsCompletedEvent completed)
+        {
+            if (runAfterEachRoll)
+            {
+                StartCoroutine(ResolveRoll());
+            }
+        }
+
+        private IEnumerator ResolveRoll()
+        {
+            CombatManager combat = CombatManager.Instance;
+
+            if (combat == null || combat.Phase != CombatPhase.Resolving)
+            {
+                yield break;
+            }
+
+            yield return new WaitForSeconds(delayBeforeResolving);
+
+            BattlefieldObjectRegistry registry = BattlefieldManager.Instance.Board.Objects;
+            InteractionResolver resolver = combat.Interactions;
+
+            while (combat.IsInCombat && TryFindClosestPair(registry.ActiveObjects, out BattlefieldObject first, out BattlefieldObject second))
+            {
+                yield return Present(resolver.Resolve(first, second));
+            }
+
+            foreach (BattlefieldObject leftover in new List<BattlefieldObject>(registry.ActiveObjects))
+            {
+                if (!combat.IsInCombat)
+                {
+                    yield break;
+                }
+
+                yield return Present(resolver.ResolveDirectHit(leftover));
+            }
+
+            if (combat.IsInCombat)
+            {
+                combat.ContinueAfterResolution();
+            }
+        }
+
+        private IEnumerator Present(InteractionResult result)
+        {
+            if (presenter != null)
+            {
+                yield return presenter.Play(result);
+            }
+        }
+
+        // Ties: opposing pair first
+        private static bool TryFindClosestPair(IReadOnlyList<BattlefieldObject> objects, out BattlefieldObject first, out BattlefieldObject second)
+        {
+            first = null;
+            second = null;
+            float bestDistance = float.PositiveInfinity;
+            bool bestIsOpposing = false;
+
+            for (int i = 0; i < objects.Count; i++)
+            {
+                for (int j = i + 1; j < objects.Count; j++)
+                {
+                    float distance = Vector2.SqrMagnitude(objects[i].Position - objects[j].Position);
+                    bool isOpposing = objects[i].IsOpposing(objects[j]);
+                    bool isCloser = distance < bestDistance;
+                    bool winsTie = Mathf.Approximately(distance, bestDistance) && isOpposing && !bestIsOpposing;
+
+                    if (isCloser || winsTie)
+                    {
+                        bestDistance = distance;
+                        bestIsOpposing = isOpposing;
+                        first = objects[i];
+                        second = objects[j];
+                    }
+                }
+            }
+
+            return first != null;
+        }
+    }
+}

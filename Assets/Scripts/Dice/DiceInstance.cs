@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 namespace Whiskers.Dice
 {
-    // A concrete die owned by a combatant during a run. Holds its own copy of faces and body color
-    // so shops and events can upgrade, replace or repaint them.
+    // Die owned during a run, shops and events can change it
     public sealed class DiceInstance
     {
         private readonly List<DiceFace> faces;
@@ -17,7 +16,15 @@ namespace Whiskers.Dice
         // Color of the whole die, carries its inherent effect
         public DiceColor BodyColor { get; private set; }
 
-        public DiceInstance(int id, string displayName, DiceSize size, IEnumerable<DiceFace> faces, DiceColor bodyColor = DiceColor.None)
+        public DiceFace CapFace { get; private set; }
+
+        public DiceInstance(
+            int id,
+            string displayName,
+            DiceSize size,
+            IEnumerable<DiceFace> faces,
+            DiceColor bodyColor = DiceColor.None,
+            DiceFace capFace = null)
         {
             if (faces == null)
             {
@@ -35,6 +42,7 @@ namespace Whiskers.Dice
             DisplayName = displayName;
             Size = size;
             BodyColor = bodyColor;
+            CapFace = capFace ?? DiceFaceSets.CreateDefaultCapFace();
         }
 
         public static DiceInstance FromDefinition(int id, DiceDefinition definition)
@@ -44,7 +52,7 @@ namespace Whiskers.Dice
                 throw new ArgumentNullException(nameof(definition));
             }
 
-            return new DiceInstance(id, definition.DisplayName, definition.Size, definition.Faces, definition.BodyColor);
+            return new DiceInstance(id, definition.DisplayName, definition.Size, definition.Faces, definition.BodyColor, definition.CapFace);
         }
 
         public DiceFace GetFace(int faceIndex)
@@ -60,6 +68,11 @@ namespace Whiskers.Dice
         public void ReplaceFace(int faceIndex, DiceFace newFace)
         {
             faces[faceIndex] = newFace ?? throw new ArgumentNullException(nameof(newFace));
+        }
+
+        public void ReplaceCapFace(DiceFace newCapFace)
+        {
+            CapFace = newCapFace ?? throw new ArgumentNullException(nameof(newCapFace));
         }
 
         public override string ToString()

@@ -2,12 +2,13 @@ using System.Collections.Generic;
 
 namespace Whiskers.Dice
 {
-    // Factory for commonly used face layouts
     public static class DiceFaceSets
     {
         private const int LowestStandardValue = 1;
 
-        // Plain numbered die: 1..N, where N is the face count of the size
+        // D9 landing on a cap
+        public const int DefaultCapValue = 0;
+
         public static List<DiceFace> CreateStandardNumbers(DiceSize size)
         {
             int faceCount = size.GetFaceCount();
@@ -19,6 +20,11 @@ namespace Whiskers.Dice
             }
 
             return faces;
+        }
+
+        public static DiceFace CreateDefaultCapFace()
+        {
+            return DiceFace.CreateNumber(DefaultCapValue);
         }
     }
 }

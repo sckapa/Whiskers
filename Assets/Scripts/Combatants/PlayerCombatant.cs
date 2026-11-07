@@ -4,7 +4,7 @@ using Whiskers.Dice;
 
 namespace Whiskers.Combatants
 {
-    // Whisker the cat. Persists through the whole run; run-specific data (gold, map progress) will live here.
+    // TODO: gold
     public sealed class PlayerCombatant : Combatant
     {
         public override CombatSide Side => CombatSide.Player;

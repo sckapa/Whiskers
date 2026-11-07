@@ -5,8 +5,7 @@ using Whiskers.Dice;
 
 namespace Whiskers.Combatants
 {
-    // Builds runtime combatants from their definitions.
-    // Dice creation is passed in (usually DiceManager.Instance.CreateDice) so the factory does not depend on scene objects.
+    // createDice: usually DiceManager.Instance.CreateDice
     public static class CombatantFactory
     {
         public static PlayerCombatant CreatePlayer(PlayerDefinition definition, Func<DiceDefinition, DiceInstance> createDice)

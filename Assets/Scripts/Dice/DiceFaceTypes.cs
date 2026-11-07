@@ -7,16 +7,14 @@ namespace Whiskers.Dice
         Symbol
     }
 
-    // Shared palette for the whole die body and for the number or symbol printed on a face.
-    // The meaning depends on where the color is applied: a body color is an inherent die effect,
-    // a glyph color is an additional face effect. Ownership is shown by material (cheese for rats), not by color.
-    // The final set of colors is not designed yet; new values are appended at the end to keep serialized data valid.
+    // Body color = die effect, glyph color = face effect
+    // Serialized, add new values at the end
     public enum DiceColor
     {
         None,
-        // Glyph: stays on the board after dealing damage, keeping the subtracted value
+        // Stays on the board with the leftover value
         Red,
-        // Glyph: rolls an additional die on landing
+        // Extra roll on landing
         Yellow
     }
 
@@ -30,7 +28,6 @@ namespace Whiskers.Dice
         Tree,
         Rot,
         Clover,
-        // Summons a dragon to the outer side of the battlefield
         Dragon
     }
 

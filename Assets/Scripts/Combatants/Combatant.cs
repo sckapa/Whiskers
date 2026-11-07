@@ -8,8 +8,8 @@ using Whiskers.Dice.Bag;
 
 namespace Whiskers.Combatants
 {
-    // Shared model of every combat participant. Plain C# so it can outlive scenes and be tested without Unity.
-    // Equipment, passives and status effects are attached by their own systems (inventory and effect tasks).
+    // Base for the player and enemies
+    // TODO: equipment, passives, status effects
     public abstract class Combatant
     {
         private readonly List<DiceInstance> ownedDice;

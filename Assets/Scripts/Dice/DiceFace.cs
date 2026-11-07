@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace Whiskers.Dice
 {
-    // One side of a die: a number or a symbol, optionally printed in a color that adds an effect.
-    // Immutable from code: upgrading a face means replacing it with a new instance.
+    // Number or symbol, glyph color adds an effect. Immutable.
     [Serializable]
     public sealed class DiceFace
     {
@@ -19,7 +18,6 @@ namespace Whiskers.Dice
         public int Value => value;
         public FaceSymbol Symbol => symbol;
 
-        // Color of the printed number or symbol, carries the additional face effect
         public DiceColor GlyphColor => glyphColor;
 
         public bool IsNumber => type == FaceType.Number;

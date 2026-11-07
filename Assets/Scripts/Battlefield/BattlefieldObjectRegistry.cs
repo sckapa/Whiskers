@@ -7,8 +7,8 @@ using Whiskers.Dice;
 
 namespace Whiskers.Battlefield
 {
-    // Single source of truth for battlefield objects of the current combat.
-    // Every mutation goes through here and is published on the EventBus.
+    // All battlefield objects of the current combat.
+    // Every change is published on the EventBus.
     public sealed class BattlefieldObjectRegistry
     {
         private const int MinimumMergeCount = 2;
@@ -16,7 +16,7 @@ namespace Whiskers.Battlefield
 
         private readonly Dictionary<int, BattlefieldObject> objectsById = new Dictionary<int, BattlefieldObject>();
 
-        // Kept sorted by id (ids only grow), which gives listeners a deterministic iteration order
+        // Sorted by id
         private readonly List<BattlefieldObject> activeObjects = new List<BattlefieldObject>();
 
         private readonly UniqueIdGenerator idGenerator = new UniqueIdGenerator();
@@ -33,15 +33,20 @@ namespace Whiskers.Battlefield
             return TryGet(id, out battlefieldObject) && battlefieldObject.CanInteract;
         }
 
-        public BattlefieldObject RegisterDie(DiceInstance die, int topFaceIndex, CombatSide owner, Vector2 position)
+        // rolledFace can be CapFace for a D9
+        public BattlefieldObject RegisterDie(DiceInstance die, DiceFace rolledFace, CombatSide owner, Vector2 position)
         {
             if (die == null)
             {
                 throw new ArgumentNullException(nameof(die));
             }
 
-            DiceFace topFace = die.GetFace(topFaceIndex);
-            int value = topFace.IsNumber ? topFace.Value : NonNumericalValue;
+            if (rolledFace == null)
+            {
+                throw new ArgumentNullException(nameof(rolledFace));
+            }
+
+            int value = rolledFace.IsNumber ? rolledFace.Value : NonNumericalValue;
 
             BattlefieldObject battlefieldObject = new BattlefieldObject(
                 idGenerator.Next(),
@@ -49,7 +54,7 @@ namespace Whiskers.Battlefield
                 BattlefieldObjectType.Die,
                 position,
                 value,
-                new[] { topFace },
+                new[] { rolledFace },
                 new[] { die.Id });
 
             AddActive(battlefieldObject);
@@ -73,7 +78,16 @@ namespace Whiskers.Battlefield
 
         public void SetValue(int id, int newValue)
         {
-            GetRequiredActive(id).Value = newValue;
+            BattlefieldObject battlefieldObject = GetRequiredActive(id);
+            int previousValue = battlefieldObject.Value;
+
+            if (previousValue == newValue)
+            {
+                return;
+            }
+
+            battlefieldObject.Value = newValue;
+            EventBus.Publish(new BattlefieldObjectValueChangedEvent(battlefieldObject, previousValue));
         }
 
         public void MarkAwaitingInteraction(int id)
@@ -118,8 +132,7 @@ namespace Whiskers.Battlefield
             return true;
         }
 
-        // Replaces several allied objects with one combined object placed at their center.
-        // Publishes only BattlefieldObjectsMergedEvent, so listeners can swap graph nodes in one step.
+        // New object at the center, values summed
         public BattlefieldObject Merge(IReadOnlyList<int> ids)
         {
             if (!CanMerge(ids))

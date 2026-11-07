@@ -5,9 +5,8 @@ using Whiskers.Dice;
 
 namespace Whiskers.Battlefield
 {
-    // Logical participant of battlefield interactions: a rolled die, a combination of dice or a summon.
-    // Lives independently of any visual GameObject; views follow it, never the other way round.
-    // Only BattlefieldObjectRegistry mutates it, so every change is announced through events.
+    // Rolled die, merged dice or summon on the board.
+    // Changed only through BattlefieldObjectRegistry.
     public sealed class BattlefieldObject
     {
         private readonly List<DiceFace> faces;
@@ -17,17 +16,17 @@ namespace Whiskers.Battlefield
         public CombatSide Owner { get; }
         public BattlefieldObjectType Type { get; }
 
-        // Position on the board in logical board units
+        // Board units
         public Vector2 Position { get; internal set; }
         public BattlefieldObjectState State { get; internal set; }
 
-        // Current numerical strength. Changes during interactions, e.g. after a subtraction.
+        // Can change during interactions
         public int Value { get; internal set; }
 
-        // Rolled faces carried by this object. A combined object keeps the faces of all its parts.
+        // Rolled faces of all dice in the object
         public IReadOnlyList<DiceFace> Faces => faces;
 
-        // Ids of DiceInstance objects this object came from
+        // DiceInstance ids this object was made from
         public IReadOnlyList<int> SourceDiceIds => sourceDiceIds;
 
         public bool CanInteract => State == BattlefieldObjectState.Active || State == BattlefieldObjectState.AwaitingInteraction;
@@ -49,6 +48,35 @@ namespace Whiskers.Battlefield
             State = BattlefieldObjectState.Active;
             this.faces = new List<DiceFace>(faces);
             this.sourceDiceIds = new List<int>(sourceDiceIds);
+        }
+
+        public bool IsNumerical
+        {
+            get
+            {
+                foreach (DiceFace face in faces)
+                {
+                    if (face.IsNumber)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        public bool HasGlyphColor(DiceColor color)
+        {
+            foreach (DiceFace face in faces)
+            {
+                if (face.GlyphColor == color)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool IsAlliedWith(BattlefieldObject other)

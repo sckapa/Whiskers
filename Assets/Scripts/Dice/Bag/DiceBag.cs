@@ -5,10 +5,8 @@ using Whiskers.Core.Events;
 
 namespace Whiskers.Dice.Bag
 {
-    // Per-combat pool of a combatant's dice, working like a deck with three zones:
-    // bag (draw pile) -> in play (rolled onto the battlefield) -> discard pile.
-    // Dice are pulled from the bag at random on every draw, so there is never a fixed order to predict.
-    // When the bag runs dry mid-draw, the discard pile is poured back into the bag and drawing continues.
+    // Works like a deck: bag -> in play -> discard.
+    // Random draw, the discard goes back in when the bag is empty.
     public sealed class DiceBag
     {
         private readonly List<DiceInstance> bag = new List<DiceInstance>();
@@ -58,7 +56,7 @@ namespace Whiskers.Dice.Bag
             return drawn;
         }
 
-        // Used for additional rolls requested by effects (e.g. a yellow face)
+        // Extra rolls
         public bool TryDrawOne(out DiceInstance die)
         {
             const int singleDie = 1;

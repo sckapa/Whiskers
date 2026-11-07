@@ -5,7 +5,6 @@ using Whiskers.Dice;
 
 namespace Whiskers.Combatants
 {
-    // A rat from the mafia. Created for a single encounter and discarded afterwards.
     public sealed class EnemyCombatant : Combatant
     {
         public override CombatSide Side => CombatSide.Enemy;

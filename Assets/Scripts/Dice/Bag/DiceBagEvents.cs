@@ -5,6 +5,7 @@ using Whiskers.Core.Events;
 namespace Whiskers.Dice.Bag
 {
     // Events for the bag UI and sounds, carrying counts so listeners do not need a reference to the bag
+    // TODO: bag UI
 
     public readonly struct DiceDrawnEvent : IGameEvent
     {
