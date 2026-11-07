@@ -4,8 +4,8 @@ using UnityEngine;
 // This is only a data container. Describing what to do with the data is the child class' responsibility
 public abstract class Dice : MonoBehaviour
 {
-    DiceSize diceSize;
-    List<DiceFace> diceFaces;
+    protected abstract DiceSize diceSize { get; set; }
+    protected abstract List<DiceFace> diceFaces { get; set; }
 }
 
 public enum DiceSize
@@ -13,6 +13,7 @@ public enum DiceSize
     D4,
     D6,
     D8,
+    D9,
     D10,
     D12,
     D20
