@@ -83,6 +83,70 @@ namespace Whiskers.Battlefield
             return FindActive(candidate => boardArea.Contains(candidate.Position));
         }
 
+        // Board units. Objects exactly at the radius are included.
+        public List<BattlefieldObject> GetObjectsInRadius(Vector2 boardPosition, float radius)
+        {
+            float sqrRadius = radius * radius;
+            return FindActive(candidate => Vector2.SqrMagnitude(candidate.Position - boardPosition) <= sqrRadius);
+        }
+
+        // Closest active object to a board position. exclude is skipped, so an object can look for its neighbour.
+        public bool TryGetNearestObject(Vector2 boardPosition, out BattlefieldObject nearest, BattlefieldObject exclude = null)
+        {
+            nearest = null;
+            float bestSqrDistance = float.PositiveInfinity;
+
+            foreach (BattlefieldObject candidate in Objects.ActiveObjects)
+            {
+                if (candidate == exclude)
+                {
+                    continue;
+                }
+
+                float sqrDistance = Vector2.SqrMagnitude(candidate.Position - boardPosition);
+
+                // Strict comparison keeps the lowest id on ties (ActiveObjects is sorted by id)
+                if (sqrDistance < bestSqrDistance)
+                {
+                    bestSqrDistance = sqrDistance;
+                    nearest = candidate;
+                }
+            }
+
+            return nearest != null;
+        }
+
+        // The two closest active objects. On equal distance an opposing pair wins, then the lowest ids.
+        public bool TryGetClosestPair(out BattlefieldObject first, out BattlefieldObject second)
+        {
+            IReadOnlyList<BattlefieldObject> objects = Objects.ActiveObjects;
+            first = null;
+            second = null;
+            float bestSqrDistance = float.PositiveInfinity;
+            bool bestIsOpposing = false;
+
+            for (int i = 0; i < objects.Count; i++)
+            {
+                for (int j = i + 1; j < objects.Count; j++)
+                {
+                    float sqrDistance = Vector2.SqrMagnitude(objects[i].Position - objects[j].Position);
+                    bool isOpposing = objects[i].IsOpposing(objects[j]);
+                    bool isCloser = sqrDistance < bestSqrDistance;
+                    bool winsTie = Mathf.Approximately(sqrDistance, bestSqrDistance) && isOpposing && !bestIsOpposing;
+
+                    if (isCloser || winsTie)
+                    {
+                        bestSqrDistance = sqrDistance;
+                        bestIsOpposing = isOpposing;
+                        first = objects[i];
+                        second = objects[j];
+                    }
+                }
+            }
+
+            return first != null;
+        }
+
         // Between combats
         public void Clear()
         {

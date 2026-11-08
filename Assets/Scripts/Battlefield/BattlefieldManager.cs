@@ -61,6 +61,12 @@ namespace Whiskers.Battlefield
 
         private void OnDieSettled(DieSettledEvent settled)
         {
+            if (!IsReady)
+            {
+                Debug.LogWarning($"Die {settled.Result.Die?.Id} settled before the battlefield board was created; it was not registered.");
+                return;
+            }
+
             DieRollResult result = settled.Result;
             Board.RegisterRolledDie(result.Die, result.Face, result.Owner, result.NormalizedPosition);
         }

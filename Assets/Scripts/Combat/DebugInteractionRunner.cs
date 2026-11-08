@@ -44,10 +44,11 @@ namespace Whiskers.Combat
 
             yield return new WaitForSeconds(delayBeforeResolving);
 
-            BattlefieldObjectRegistry registry = BattlefieldManager.Instance.Board.Objects;
+            BattlefieldBoard board = BattlefieldManager.Instance.Board;
+            BattlefieldObjectRegistry registry = board.Objects;
             InteractionResolver resolver = combat.Interactions;
 
-            while (combat.IsInCombat && TryFindClosestPair(registry.ActiveObjects, out BattlefieldObject first, out BattlefieldObject second))
+            while (combat.IsInCombat && board.TryGetClosestPair(out BattlefieldObject first, out BattlefieldObject second))
             {
                 yield return Present(resolver.Resolve(first, second));
             }
@@ -74,36 +75,6 @@ namespace Whiskers.Combat
             {
                 yield return presenter.Play(result);
             }
-        }
-
-        // Ties: opposing pair first
-        private static bool TryFindClosestPair(IReadOnlyList<BattlefieldObject> objects, out BattlefieldObject first, out BattlefieldObject second)
-        {
-            first = null;
-            second = null;
-            float bestDistance = float.PositiveInfinity;
-            bool bestIsOpposing = false;
-
-            for (int i = 0; i < objects.Count; i++)
-            {
-                for (int j = i + 1; j < objects.Count; j++)
-                {
-                    float distance = Vector2.SqrMagnitude(objects[i].Position - objects[j].Position);
-                    bool isOpposing = objects[i].IsOpposing(objects[j]);
-                    bool isCloser = distance < bestDistance;
-                    bool winsTie = Mathf.Approximately(distance, bestDistance) && isOpposing && !bestIsOpposing;
-
-                    if (isCloser || winsTie)
-                    {
-                        bestDistance = distance;
-                        bestIsOpposing = isOpposing;
-                        first = objects[i];
-                        second = objects[j];
-                    }
-                }
-            }
-
-            return first != null;
         }
     }
 }
