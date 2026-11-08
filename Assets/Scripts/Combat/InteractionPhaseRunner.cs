@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Whiskers.Battlefield;
 using Whiskers.Combat.Interactions;
@@ -8,10 +7,10 @@ using Whiskers.Core.Events;
 
 namespace Whiskers.Combat
 {
-    // Temporary phase 3 until the interaction queue is done.
-    public sealed class DebugInteractionRunner : MonoBehaviour
+    // Phase 3: takes the closest pair from the interaction graph, resolves and animates it, until no pair is left.
+    // Then hands over to phase 4 (CombatManager.ContinueAfterResolution), which hits with the leftovers.
+    public sealed class InteractionPhaseRunner : MonoBehaviour
     {
-        [SerializeField] private bool runAfterEachRoll = true;
         [SerializeField] private InteractionPresenter presenter = null;
         [SerializeField, Min(0f)] private float delayBeforeResolving = 0.5f;
 
@@ -27,10 +26,7 @@ namespace Whiskers.Combat
 
         private void OnRollsCompleted(CombatRollsCompletedEvent completed)
         {
-            if (runAfterEachRoll)
-            {
-                StartCoroutine(ResolveRoll());
-            }
+            StartCoroutine(ResolveRoll());
         }
 
         private IEnumerator ResolveRoll()
@@ -45,22 +41,11 @@ namespace Whiskers.Combat
             yield return new WaitForSeconds(delayBeforeResolving);
 
             BattlefieldBoard board = BattlefieldManager.Instance.Board;
-            BattlefieldObjectRegistry registry = board.Objects;
             InteractionResolver resolver = combat.Interactions;
 
             while (combat.IsInCombat && board.Graph.TryGetMinimumEdge(out InteractionEdge nextEdge))
             {
                 yield return Present(resolver.Resolve(nextEdge.First, nextEdge.Second));
-            }
-
-            foreach (BattlefieldObject leftover in new List<BattlefieldObject>(registry.ActiveObjects))
-            {
-                if (!combat.IsInCombat)
-                {
-                    yield break;
-                }
-
-                yield return Present(resolver.ResolveDirectHit(leftover));
             }
 
             if (combat.IsInCombat)

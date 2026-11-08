@@ -68,6 +68,11 @@ namespace Whiskers.Combat.Interactions
             return result;
         }
 
+        public bool CanDealDirectHit(BattlefieldObject attacker)
+        {
+            return attacker != null && IsActive(attacker);
+        }
+
         // Object with nobody to collide with
         public InteractionResult ResolveDirectHit(BattlefieldObject attacker)
         {

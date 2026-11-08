@@ -11,7 +11,14 @@ namespace Whiskers.Combat
         None,
         Setup,
         Rolling,
+        // Phase 1
+        LandingEffects,
+        // Phase 2
+        StartEffects,
+        // Phase 3
         Resolving,
+        // Phase 4: leftover objects hit the opponent, end-of-roll effects
+        DamageResolution,
         Finished
     }
 

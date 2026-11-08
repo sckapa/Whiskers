@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace Whiskers.Combat.Presentation
 {
-    // Floating damage number
+    // Floating damage number. ShowStill = the number without animation (used while it flies to the HP bar),
+    // Play = rise and fade, then destroy.
     // TODO(art): font and color
     [RequireComponent(typeof(TextMeshPro))]
     public sealed class DamagePopup : MonoBehaviour
@@ -14,11 +15,19 @@ namespace Whiskers.Combat.Presentation
         [SerializeField] private float riseDistance = 0.8f;
         [SerializeField] private AnimationCurve alphaOverLifetime = AnimationCurve.Linear(0f, 1f, 1f, 0f);
         [SerializeField] private AnimationCurve scaleOverLifetime = AnimationCurve.EaseInOut(0f, 1.3f, 1f, 1f);
+        [SerializeField] private string blockedText = "Blocked";
 
         private TMP_Text label;
         private Vector3 startPosition;
         private Vector3 startScale;
         private float age;
+        private bool isPlaying;
+
+        private void Awake()
+        {
+            label = GetComponent<TMP_Text>();
+            startScale = transform.localScale;
+        }
 
         public void SetSorting(int sortingLayerId, int sortingOrder)
         {
@@ -27,18 +36,25 @@ namespace Whiskers.Combat.Presentation
             text.sortingOrder = sortingOrder;
         }
 
-        public void Play(int amount)
+        public void ShowStill(int amount, bool blocked = false)
         {
-            label = GetComponent<TMP_Text>();
-            label.text = string.Format(DamageFormat, amount);
+            label.text = blocked ? blockedText : string.Format(DamageFormat, amount);
+            label.alpha = 1f;
+            isPlaying = false;
+        }
+
+        public void Play(int amount, bool blocked = false)
+        {
+            ShowStill(amount, blocked);
             startPosition = transform.position;
-            startScale = transform.localScale;
+            transform.localScale = startScale;
             age = 0f;
+            isPlaying = true;
         }
 
         private void Update()
         {
-            if (label == null)
+            if (!isPlaying)
             {
                 return;
             }

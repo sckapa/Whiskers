@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using Whiskers.Battlefield;
 using Whiskers.Combatants;
+using Whiskers.Combatants.Status;
 using Whiskers.Core;
 using Whiskers.Core.Events;
 
@@ -15,18 +16,22 @@ namespace Whiskers.Combat.Interactions
 
         public int Dealt { get; }
 
+        // A shield on the target absorbed the whole attack
+        public bool WasBlocked { get; }
+
         // Board units
         public Vector2 Position { get; }
 
         public bool IsEmpty => Target == null;
 
-        public DamageReport(BattlefieldObject source, Combatant target, int requested, int dealt, Vector2 position)
+        public DamageReport(BattlefieldObject source, Combatant target, int requested, int dealt, Vector2 position, bool wasBlocked = false)
         {
             Source = source;
             Target = target;
             Requested = requested;
             Dealt = dealt;
             Position = position;
+            WasBlocked = wasBlocked;
         }
 
         public static DamageReport None(Vector2 position)
@@ -42,6 +47,21 @@ namespace Whiskers.Combat.Interactions
         public InteractionDamageEvent(DamageReport report)
         {
             Report = report;
+        }
+    }
+
+    // Published right before interaction damage is applied (InteractionDamageEvent follows right after it)
+    public readonly struct InteractionDamageIncomingEvent : IGameEvent
+    {
+        public BattlefieldObject Source { get; }
+        public Combatant Target { get; }
+        public int Amount { get; }
+
+        public InteractionDamageIncomingEvent(BattlefieldObject source, Combatant target, int amount)
+        {
+            Source = source;
+            Target = target;
+            Amount = amount;
         }
     }
 
@@ -76,10 +96,13 @@ namespace Whiskers.Combat.Interactions
 
             Combatant target = GetOpponentOf(source.Owner);
 
-            // TODO: shield, armor
-            int dealt = target.TakeDamage(amount);
+            EventBus.Publish(new InteractionDamageIncomingEvent(source, target, amount));
 
-            DamageReport report = new DamageReport(source, target, amount, dealt, position);
+            // TODO: armor
+            bool blocked = target.Statuses.TryConsume(StatusType.Shield);
+            int dealt = blocked ? Health.NothingApplied : target.TakeDamage(amount);
+
+            DamageReport report = new DamageReport(source, target, amount, dealt, position, blocked);
             EventBus.Publish(new InteractionDamageEvent(report));
             return report;
         }

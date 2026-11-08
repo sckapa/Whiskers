@@ -99,17 +99,26 @@ namespace Whiskers.Dice.Rolling
             StartCoroutine(ThrowEnemyHandAfterDelay());
         }
 
+        // Extra dice requested by effects: thrown automatically from the owner's corner, outside of the round.
+        // Returns the throw id, DiceThrowSettledEvent reports it when the dice rest.
+        public int ThrowAdditional(IReadOnlyList<DiceInstance> dice, CombatSide owner)
+        {
+            float strength = Random.Range(Settings.EnemyMinStrength, Settings.EnemyMaxStrength);
+            thrower.Throw(dice, owner, Settings.GetHandCorner(owner), CalculateAutoAim(owner), strength, out int throwId);
+            return throwId;
+        }
+
         private IEnumerator ThrowEnemyHandAfterDelay()
         {
             yield return new WaitForSeconds(Random.Range(Settings.EnemyMinDelay, Settings.EnemyMaxDelay));
 
             float strength = Random.Range(Settings.EnemyMinStrength, Settings.EnemyMaxStrength);
-            thrower.Release(enemyHand, CalculateEnemyAim(), strength);
+            thrower.Release(enemyHand, CalculateAutoAim(CombatSide.Enemy), strength);
         }
 
-        private Vector2 CalculateEnemyAim()
+        private Vector2 CalculateAutoAim(CombatSide owner)
         {
-            Vector2 towardCenter = (Vector2.one * TrayMiddle - Settings.GetHandCorner(CombatSide.Enemy)).normalized;
+            Vector2 towardCenter = (Vector2.one * TrayMiddle - Settings.GetHandCorner(owner)).normalized;
             float angle = Random.Range(-Settings.EnemyAimSpread, Settings.EnemyAimSpread);
 
             return ThrowDirection.Rotate(towardCenter, angle);

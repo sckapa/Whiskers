@@ -9,13 +9,6 @@ namespace Whiskers.Battlefield
     // Board size = tray floor size.
     public sealed class BattlefieldManager : Singleton<BattlefieldManager>
     {
-        [SerializeField] private TerritoryAxis territoryAxis = TerritoryAxis.Horizontal;
-
-        [SerializeField, Range(0f, 1f)] private float startingPlayerShare = 0.5f;
-
-        [SerializeField, Range(0f, 1f)] private float minPlayerShare = 0.2f;
-        [SerializeField, Range(0f, 1f)] private float maxPlayerShare = 0.8f;
-
         [Header("Debug")]
         [SerializeField] private bool drawInteractionGraph = true;
         [SerializeField] private bool drawEdgeDistances = true;
@@ -66,8 +59,7 @@ namespace Whiskers.Battlefield
                 return;
             }
 
-            BattlefieldTerritory territory = new BattlefieldTerritory(territoryAxis, startingPlayerShare, minPlayerShare, maxPlayerShare);
-            Board = new BattlefieldBoard(tray.FloorSize, territory);
+            Board = new BattlefieldBoard(tray.FloorSize);
             EventBus.Publish(new BattlefieldReadyEvent(Board));
         }
 
@@ -123,11 +115,6 @@ namespace Whiskers.Battlefield
             {
                 InteractionGraphGizmos.Draw(Board, DiceRollStage.Instance.Tray, drawEdgeDistances);
             }
-        }
-
-        private void OnValidate()
-        {
-            maxPlayerShare = Mathf.Max(maxPlayerShare, minPlayerShare);
         }
     }
 

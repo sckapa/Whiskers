@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Whiskers.Core.Events;
 
 namespace Whiskers.Dice
 {
     // Die owned during a run, shops and events can change it
     public sealed class DiceInstance
     {
+        private const int NoCharges = 0;
+
         private readonly List<DiceFace> faces;
 
         public int Id { get; }
@@ -17,6 +20,9 @@ namespace Whiskers.Dice
         public DiceColor BodyColor { get; private set; }
 
         public DiceFace CapFace { get; private set; }
+
+        // Stored by charging effects during a combat, reset when a combat starts
+        public int Charges { get; private set; }
 
         public DiceInstance(
             int id,
@@ -75,9 +81,66 @@ namespace Whiskers.Dice
             CapFace = newCapFace ?? throw new ArgumentNullException(nameof(newCapFace));
         }
 
+        public void AddCharges(int amount)
+        {
+            if (amount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), amount, "Use TryConsumeCharges to remove charges.");
+            }
+
+            SetCharges(Charges + amount);
+        }
+
+        public bool TryConsumeCharges(int amount)
+        {
+            if (amount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), amount, "Amount cannot be negative.");
+            }
+
+            if (Charges < amount)
+            {
+                return false;
+            }
+
+            SetCharges(Charges - amount);
+            return true;
+        }
+
+        public void ResetCharges()
+        {
+            SetCharges(NoCharges);
+        }
+
         public override string ToString()
         {
             return $"{DisplayName} #{Id} ({Size})";
+        }
+
+        private void SetCharges(int charges)
+        {
+            if (charges == Charges)
+            {
+                return;
+            }
+
+            int previous = Charges;
+            Charges = charges;
+            EventBus.Publish(new DieChargesChangedEvent(this, previous, charges));
+        }
+    }
+
+    public readonly struct DieChargesChangedEvent : IGameEvent
+    {
+        public DiceInstance Die { get; }
+        public int PreviousCharges { get; }
+        public int CurrentCharges { get; }
+
+        public DieChargesChangedEvent(DiceInstance die, int previousCharges, int currentCharges)
+        {
+            Die = die;
+            PreviousCharges = previousCharges;
+            CurrentCharges = currentCharges;
         }
     }
 }

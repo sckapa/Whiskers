@@ -78,17 +78,6 @@ namespace Whiskers.Dice.Bag
             EventBus.Publish(new DiceDiscardedEvent(Owner, die, discardPile.Count));
         }
 
-        // Dice that stay on the board (e.g. red faces) must be skipped by the caller instead of using this
-        public void DiscardAllInPlay()
-        {
-            List<DiceInstance> diceToDiscard = new List<DiceInstance>(inPlay);
-
-            foreach (DiceInstance die in diceToDiscard)
-            {
-                Discard(die);
-            }
-        }
-
         // A die gained during combat goes straight into the bag
         public void AddToBag(DiceInstance die)
         {

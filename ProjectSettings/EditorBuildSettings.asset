@@ -6,8 +6,23 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/Bootstrap.unity
+    guid: eab50e73d59a3354da5d5546c0f2516a
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: a4f50c0efd0dee44b930f732a264edab
+  - enabled: 1
+    path: Assets/Scenes/Map.unity
+    guid: eb25b5b2ebab4e14d973aafe3a52acbb
+  - enabled: 1
+    path: Assets/Scenes/Combat.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Scenes/DiceRoll.unity
+    guid: bc4e26ca7438d714782ca37f8e4f4370
+  - enabled: 1
+    path: Assets/Scenes/RunEnd.unity
+    guid: 4857faa9aa0e3574e8b626d53b682754
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

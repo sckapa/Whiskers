@@ -88,7 +88,8 @@ namespace Whiskers.Dice.Rolling
             CombatSide owner,
             Vector2 originNormalized,
             Vector2 direction,
-            float strength)
+            float strength,
+            out int throwId)
         {
             if (dice == null)
             {
@@ -108,7 +109,8 @@ namespace Whiskers.Dice.Rolling
                 thrown.Add(rollingDie);
             }
 
-            RegisterThrow(nextThrowId++, owner, thrown);
+            throwId = nextThrowId++;
+            RegisterThrow(throwId, owner, thrown);
             return thrown;
         }
 

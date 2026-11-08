@@ -6,18 +6,17 @@ using Whiskers.Dice;
 
 namespace Whiskers.Battlefield
 {
-    // Shared board: size, territories and objects on it.
+    // Shared board: size and objects on it.
     // Board units, (0, 0) is bottom-left.
     public sealed class BattlefieldBoard
     {
         public Vector2 Size { get; }
-        public BattlefieldTerritory Territory { get; }
         public BattlefieldObjectRegistry Objects { get; } = new BattlefieldObjectRegistry();
 
         // Possible interactions between the active objects. Kept up to date by BattlefieldManager.
         public InteractionGraph Graph { get; } = new InteractionGraph();
 
-        public BattlefieldBoard(Vector2 size, BattlefieldTerritory territory)
+        public BattlefieldBoard(Vector2 size)
         {
             if (size.x <= 0f || size.y <= 0f)
             {
@@ -25,7 +24,6 @@ namespace Whiskers.Battlefield
             }
 
             Size = size;
-            Territory = territory ?? throw new ArgumentNullException(nameof(territory));
         }
 
         // 0..1 -> board units, clamped
@@ -50,11 +48,6 @@ namespace Whiskers.Battlefield
             return Objects.RegisterDie(die, rolledFace, owner, FromNormalized(normalizedPosition));
         }
 
-        public CombatSide GetTerritoryOwner(Vector2 boardPosition)
-        {
-            return Territory.GetOwnerAt(ToNormalized(boardPosition));
-        }
-
         // Active object that contains the die
         public bool TryGetObjectForDie(int dieId, out BattlefieldObject found)
         {
@@ -74,11 +67,6 @@ namespace Whiskers.Battlefield
         public List<BattlefieldObject> GetObjectsOwnedBy(CombatSide owner)
         {
             return FindActive(candidate => candidate.Owner == owner);
-        }
-
-        public List<BattlefieldObject> GetObjectsInTerritory(CombatSide territoryOwner)
-        {
-            return FindActive(candidate => GetTerritoryOwner(candidate.Position) == territoryOwner);
         }
 
         public List<BattlefieldObject> GetObjectsInArea(Rect boardArea)
@@ -119,35 +107,30 @@ namespace Whiskers.Battlefield
             return nearest != null;
         }
 
-        // The two closest active objects. On equal distance an opposing pair wins, then the lowest ids.
-        public bool TryGetClosestPair(out BattlefieldObject first, out BattlefieldObject second)
+        // Closest active object of the other side, e.g. for "stun the nearest rat die". Ties: lowest id.
+        public bool TryGetNearestOpposing(BattlefieldObject source, out BattlefieldObject nearest)
         {
-            IReadOnlyList<BattlefieldObject> objects = Objects.ActiveObjects;
-            first = null;
-            second = null;
-            float bestSqrDistance = float.PositiveInfinity;
-            bool bestIsOpposing = false;
+            nearest = null;
 
-            for (int i = 0; i < objects.Count; i++)
+            if (source == null)
             {
-                for (int j = i + 1; j < objects.Count; j++)
-                {
-                    float sqrDistance = Vector2.SqrMagnitude(objects[i].Position - objects[j].Position);
-                    bool isOpposing = objects[i].IsOpposing(objects[j]);
-                    bool isCloser = sqrDistance < bestSqrDistance;
-                    bool winsTie = Mathf.Approximately(sqrDistance, bestSqrDistance) && isOpposing && !bestIsOpposing;
+                return false;
+            }
 
-                    if (isCloser || winsTie)
-                    {
-                        bestSqrDistance = sqrDistance;
-                        bestIsOpposing = isOpposing;
-                        first = objects[i];
-                        second = objects[j];
-                    }
+            float bestSqrDistance = float.PositiveInfinity;
+
+            foreach (BattlefieldObject candidate in Objects.ActiveObjects)
+            {
+                float sqrDistance = Vector2.SqrMagnitude(candidate.Position - source.Position);
+
+                if (source.IsOpposing(candidate) && sqrDistance < bestSqrDistance)
+                {
+                    bestSqrDistance = sqrDistance;
+                    nearest = candidate;
                 }
             }
 
-            return first != null;
+            return nearest != null;
         }
 
         // Between combats
@@ -155,7 +138,6 @@ namespace Whiskers.Battlefield
         {
             Objects.Clear();
             Graph.Clear();
-            Territory.Reset();
         }
 
         private List<BattlefieldObject> FindActive(Predicate<BattlefieldObject> match)
