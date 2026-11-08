@@ -25,12 +25,23 @@ namespace Whiskers.Dice.Visuals
 
         [SerializeField] private TMP_FontAsset numberFont = null;
 
+        [Header("Holes (cheese dice), relative to the face slot size")]
         [SerializeField] private Sprite holeSprite;
+        [SerializeField, Range(0.05f, 0.6f)] private float holeSize = 0.3f;
+        [SerializeField, Range(0.1f, 0.6f)] private float holeSpacing = 0.34f;
+        // Random shift of every hole from its grid cell
+        [SerializeField, Range(0f, 0.3f)] private float holePositionJitter = 0.05f;
+        // Random size change of every hole, 0.25 = +-25%
+        [SerializeField, Range(0f, 0.6f)] private float holeSizeJitter = 0.25f;
 
         [SerializeField] private List<SymbolSpriteEntry> symbolSprites = new List<SymbolSpriteEntry>();
 
         public TMP_FontAsset NumberFont => numberFont;
         public Sprite HoleSprite => holeSprite;
+        public float HoleSize => holeSize;
+        public float HoleSpacing => holeSpacing;
+        public float HolePositionJitter => holePositionJitter;
+        public float HoleSizeJitter => holeSizeJitter;
 
         public DiceStyle GetStyle(CombatSide owner)
         {

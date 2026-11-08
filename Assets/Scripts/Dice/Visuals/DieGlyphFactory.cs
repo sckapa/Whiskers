@@ -12,9 +12,8 @@ namespace Whiskers.Dice.Visuals
         private const float MinFontSize = 0.01f;
         private const float MaxFontSize = 20f;
 
-        // Relative to the slot size
-        private const float HoleDiameterToSlot = 0.24f;
-        private const float HoleSpacingToSlot = 0.32f;
+        // Same face -> same hole pattern on every redraw
+        private const int HoleSeedPrime = 7919;
 
         // TODO(art): symbol icons
         private const int SymbolFallbackLetters = 2;
@@ -29,7 +28,7 @@ namespace Whiskers.Dice.Visuals
 
             if (face.IsNumber && style.SmallNumbersAsHoles && DicePipLayout.CanShow(face.Value) && settings.HoleSprite != null)
             {
-                CreateHoles(face.Value, slot, color, settings.HoleSprite);
+                CreateHoles(face.Value, slot, color, settings);
             }
             else if (face.IsSymbol && settings.TryGetSymbolSprite(face.Symbol, out Sprite symbolSprite))
             {
@@ -42,15 +41,25 @@ namespace Whiskers.Dice.Visuals
             }
         }
 
-        private static void CreateHoles(int value, DieGlyphSlot slot, Color color, Sprite holeSprite)
+        private static void CreateHoles(int value, DieGlyphSlot slot, Color color, DiceVisualSettings settings)
         {
-            float diameter = slot.Size * HoleDiameterToSlot;
-            float spacing = slot.Size * HoleSpacingToSlot;
+            float diameter = slot.Size * settings.HoleSize;
+            float spacing = slot.Size * settings.HoleSpacing;
+            float positionJitter = slot.Size * settings.HolePositionJitter;
+            System.Random random = new System.Random(value * HoleSeedPrime + slot.Anchor.GetSiblingIndex());
 
             foreach (Vector2 cell in DicePipLayout.GetCells(value))
             {
-                CreateSprite(HoleObjectName, holeSprite, slot.Anchor, cell * spacing, diameter, color);
+                Vector2 shift = new Vector2(RandomSigned(random), RandomSigned(random)) * positionJitter;
+                float size = diameter * (1f + RandomSigned(random) * settings.HoleSizeJitter);
+                CreateSprite(HoleObjectName, settings.HoleSprite, slot.Anchor, cell * spacing + shift, size, color);
             }
+        }
+
+        // Uniform value in [-1, 1]
+        private static float RandomSigned(System.Random random)
+        {
+            return (float)(random.NextDouble() * 2.0 - 1.0);
         }
 
         private static void CreateSprite(string objectName, Sprite sprite, Transform parent, Vector2 offset, float size, Color color)

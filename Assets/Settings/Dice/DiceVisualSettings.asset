@@ -27,7 +27,7 @@ MonoBehaviour:
   enemyStyle:
     bodyMaterial: {fileID: 2100000, guid: 67fc4744ba4b9c541845e943a45fec1d, type: 2}
     defaultBodyColor: {r: 1, g: 0.82, b: 0.35, a: 1}
-    defaultGlyphColor: {r: 0.55, g: 0.35, b: 0.1, a: 1}
+    defaultGlyphColor: {r: 0.9433962, g: 0.6431644, b: 0.27144888, a: 1}
     smallNumbersAsHoles: 1
     colors:
     - color: 1
@@ -37,5 +37,9 @@ MonoBehaviour:
       bodyColor: {r: 1, g: 0.9, b: 0.4, a: 1}
       glyphColor: {r: 0.9, g: 0.65, b: 0, a: 1}
   numberFont: {fileID: 0}
-  holeSprite: {fileID: -8774444458492554261, guid: 04a35162dddc7714dbb8b1025953854b, type: 3}
+  holeSprite: {fileID: -8774444458492554261, guid: 3e631104f892ae34aab9311109fb5a61, type: 3}
+  holeSize: 0.3
+  holeSpacing: 0.34
+  holePositionJitter: 0.05
+  holeSizeJitter: 0.062
   symbolSprites: []
