@@ -14,6 +14,9 @@ namespace Whiskers.Battlefield
         public BattlefieldTerritory Territory { get; }
         public BattlefieldObjectRegistry Objects { get; } = new BattlefieldObjectRegistry();
 
+        // Possible interactions between the active objects. Kept up to date by BattlefieldManager.
+        public InteractionGraph Graph { get; } = new InteractionGraph();
+
         public BattlefieldBoard(Vector2 size, BattlefieldTerritory territory)
         {
             if (size.x <= 0f || size.y <= 0f)
@@ -151,6 +154,7 @@ namespace Whiskers.Battlefield
         public void Clear()
         {
             Objects.Clear();
+            Graph.Clear();
             Territory.Reset();
         }
 

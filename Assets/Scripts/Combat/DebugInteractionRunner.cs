@@ -48,9 +48,9 @@ namespace Whiskers.Combat
             BattlefieldObjectRegistry registry = board.Objects;
             InteractionResolver resolver = combat.Interactions;
 
-            while (combat.IsInCombat && board.TryGetClosestPair(out BattlefieldObject first, out BattlefieldObject second))
+            while (combat.IsInCombat && board.Graph.TryGetMinimumEdge(out InteractionEdge nextEdge))
             {
-                yield return Present(resolver.Resolve(first, second));
+                yield return Present(resolver.Resolve(nextEdge.First, nextEdge.Second));
             }
 
             foreach (BattlefieldObject leftover in new List<BattlefieldObject>(registry.ActiveObjects))

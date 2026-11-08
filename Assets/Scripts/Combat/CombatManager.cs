@@ -123,7 +123,10 @@ namespace Whiskers.Combat
             DiceRollStage.Instance.Thrower.ClearTable();
             Player.BeginCombat(random);
             Enemy.BeginCombat(random);
-            Interactions = new InteractionResolver(BattlefieldManager.Instance.Board.Objects, new DamageResolver(Player, Enemy));
+            Interactions = new InteractionResolver(
+                BattlefieldManager.Instance.Board.Objects,
+                new DamageResolver(Player, Enemy),
+                BattlefieldManager.Instance.Board.Graph);
 
             EventBus.Publish(new CombatStartedEvent(Player, Enemy));
             StartRoll();
