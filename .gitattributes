@@ -149,4 +149,8 @@ Packages/packages-lock.json linguist-generated
 *.skel.bytes            lfs
 # Exceptions for .asset files such as lightning pre-baking
 LightingData.asset     binary
+# Cheese dice: small, script-generated (Tools/Blender/build_cheese_dice.py), kept in plain git
+# rather than LFS so they don't count against the repo owner's LFS budget.
+Assets/Whiskers/Models/Dice/*.fbx   -filter binary
+Art/Blender/*.blend                 -filter binary
 * !text !filter !merge !diff
