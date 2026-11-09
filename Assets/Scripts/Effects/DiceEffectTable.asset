@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 603ee077fbc47894f8720ae58158f03b, type: 3}
+  m_Name: DiceEffectTable
+  m_EditorClassIdentifier: Assembly-CSharp::Whiskers.Effects.DiceEffectTable
+  colors:
+  - color: 2
+    bodyEffects: []
+    glyphEffects: []
+  symbols:
+  - symbol: 0
+    effects:
+    - {fileID: 11400000, guid: 90c4a2aa79fd7b54e96be48b4de25da1, type: 2}

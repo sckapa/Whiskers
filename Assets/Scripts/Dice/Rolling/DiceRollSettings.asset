@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ed49451842804a4c8aee40be727dc6f, type: 3}
+  m_Name: DiceRollSettings
+  m_EditorClassIdentifier: Assembly-CSharp::Whiskers.Dice.Rolling.DiceRollSettings
+  playerHandCorner: {x: 0.1, y: 0.1}
+  enemyHandCorner: {x: 0.9, y: 0.9}
+  handDepthBelowLid: 0.8
+  handColumns: 3
+  handSpacing: 1.15
+  jiggleOffset: 0.06
+  jiggleAngle: 8
+  jiggleFrequency: 9
+  minDragDistance: 0.03
+  autoThrowDragDistance: 0.9
+  minDragSpeed: 0.3
+  maxDragSpeed: 3
+  dragVelocityWindow: 0.1
+  enemyMinDelay: 0
+  enemyMaxDelay: 0.1
+  enemyMinStrength: 0.7
+  enemyMaxStrength: 1
+  enemyAimSpread: 60
+  minThrowImpulse: 4
+  maxThrowImpulse: 14
+  upwardThrowShare: 0.2
+  throwDirectionSpread: 61
+  throwStrengthSpread: 0.5
+  throwTorque: 6
+  spawnHeight: 3
+  spawnVerticalSpacing: 1.1
+  spawnScatter: 0.6
+  originEdgeMargin: 0.1
+  maxSettledLinearSpeed: 0.05
+  maxSettledAngularSpeed: 0.1
+  requiredStillTime: 0.3
+  maxRollTime: 8
+  freezeWhenSettled: 1
+  minFlatAlignment: 0.985
+  maxNudges: 3
+  nudgeImpulse: 1.5
+  nudgeTorque: 2
+  minImpactSpeed: 0.5
+  maxImpactSpeed: 8
+  impactSoundCooldown: 0.08

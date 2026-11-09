@@ -1,0 +1,65 @@
+using System.Collections;
+using UnityEngine;
+using Whiskers.Battlefield;
+using Whiskers.Combat.Interactions;
+using Whiskers.Combat.Presentation;
+using Whiskers.Core.Events;
+
+namespace Whiskers.Combat
+{
+    // Phase 3: takes the closest pair from the interaction graph, resolves and animates it, until no pair is left.
+    // Then hands over to phase 4 (CombatManager.ContinueAfterResolution), which hits with the leftovers.
+    public sealed class InteractionPhaseRunner : MonoBehaviour
+    {
+        [SerializeField] private InteractionPresenter presenter = null;
+        [SerializeField, Min(0f)] private float delayBeforeResolving = 0.5f;
+
+        private void OnEnable()
+        {
+            EventBus.Subscribe<CombatRollsCompletedEvent>(OnRollsCompleted);
+        }
+
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<CombatRollsCompletedEvent>(OnRollsCompleted);
+        }
+
+        private void OnRollsCompleted(CombatRollsCompletedEvent completed)
+        {
+            StartCoroutine(ResolveRoll());
+        }
+
+        private IEnumerator ResolveRoll()
+        {
+            CombatManager combat = CombatManager.Instance;
+
+            if (combat == null || combat.Phase != CombatPhase.Resolving)
+            {
+                yield break;
+            }
+
+            yield return new WaitForSeconds(delayBeforeResolving);
+
+            BattlefieldBoard board = BattlefieldManager.Instance.Board;
+            InteractionResolver resolver = combat.Interactions;
+
+            while (combat.IsInCombat && board.Graph.TryGetMinimumEdge(out InteractionEdge nextEdge))
+            {
+                yield return Present(resolver.Resolve(nextEdge.First, nextEdge.Second));
+            }
+
+            if (combat.IsInCombat)
+            {
+                combat.ContinueAfterResolution();
+            }
+        }
+
+        private IEnumerator Present(InteractionResult result)
+        {
+            if (presenter != null)
+            {
+                yield return presenter.Play(result);
+            }
+        }
+    }
+}

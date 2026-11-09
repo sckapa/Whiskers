@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1079963045b0bb4cb5b2690ded725a7, type: 3}
+  m_Name: StandardD12Dice
+  m_EditorClassIdentifier: Assembly-CSharp::Whiskers.Dice.DiceDefinition
+  displayName: 
+  size: 4
+  bodyColor: 0
+  faces:
+  - type: 0
+    value: 1
+    symbol: 0
+    glyphColor: 0
+  - type: 0
+    value: 2
+    symbol: 0
+    glyphColor: 0
+  - type: 0
+    value: 3
+    symbol: 0
+    glyphColor: 0
+  - type: 0
+    value: 4
+    symbol: 0
+    glyphColor: 0
+  - type: 0
+    value: 5
+    symbol: 0
+    glyphColor: 0
+  - type: 0
+    value: 6
+    symbol: 0
+    glyphColor: 0
+  - type: 0
+    value: 7
+    symbol: 0
+    glyphColor: 0
+  - type: 0
+    value: 8
+    symbol: 0
+    glyphColor: 0
+  - type: 0
+    value: 9
+    symbol: 0
+    glyphColor: 0
+  - type: 0
+    value: 10
+    symbol: 0
+    glyphColor: 0
+  - type: 0
+    value: 11
+    symbol: 0
+    glyphColor: 0
+  - type: 0
+    value: 12
+    symbol: 0
+    glyphColor: 0
+  capFace:
+    type: 0
+    value: 0
+    symbol: 0
+    glyphColor: 0
