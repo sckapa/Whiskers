@@ -38,4 +38,14 @@ namespace Whiskers.Combatants
             Combatant = combatant;
         }
     }
+
+    public readonly struct CombatantPassivesChangedEvent : IGameEvent
+    {
+        public Combatant Combatant { get; }
+
+        public CombatantPassivesChangedEvent(Combatant combatant)
+        {
+            Combatant = combatant;
+        }
+    }
 }

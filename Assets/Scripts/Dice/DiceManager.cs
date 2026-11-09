@@ -13,6 +13,9 @@ namespace Whiskers.Dice
 
         public IReadOnlyDictionary<int, DiceInstance> DiceById => diceById;
 
+        // The run's dice must outlive the Combat scene
+        protected override bool PersistAcrossScenes => true;
+
         public DiceInstance CreateDice(DiceDefinition definition)
         {
             return Register(DiceInstance.FromDefinition(idGenerator.Next(), definition));

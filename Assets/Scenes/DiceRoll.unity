@@ -584,51 +584,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &906005995
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 906005997}
-  - component: {fileID: 906005996}
-  m_Layer: 0
-  m_Name: DiceRollSceneLoader
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &906005996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 906005995}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94de61b44cacbd74d8daa366b8267f0f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Whiskers.Dice.Rolling.DiceRollSceneLoader
-  diceSceneName: DiceRoll
---- !u!4 &906005997
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 906005995}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 27.64204, y: 0.19664, z: 0.00525}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1469684207
 GameObject:
   m_ObjectHideFlags: 0
@@ -803,11 +758,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Whiskers.Dice.Rolling.DiceRollRound
   thrower: {fileID: 692835006}
-  debugMode: 0
-  debugRestartKey: 32
-  debugSize: 5
-  debugPlayerDice: 5
-  debugEnemyDice: 5
 --- !u!4 &1646490933
 Transform:
   m_ObjectHideFlags: 0
@@ -834,4 +784,3 @@ SceneRoots:
   - {fileID: 778695855}
   - {fileID: 619595087}
   - {fileID: 697991169}
-  - {fileID: 906005997}

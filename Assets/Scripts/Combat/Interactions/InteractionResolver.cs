@@ -13,6 +13,9 @@ namespace Whiskers.Combat.Interactions
 
         private readonly BattlefieldObjectRegistry registry;
 
+        // Optional. Pairs that were resolved are marked here so they are not picked again this roll.
+        private readonly InteractionGraph graph;
+
         // Objects that already dealt damage this roll
         private readonly HashSet<int> attackedThisRoll = new HashSet<int>();
 
@@ -20,10 +23,11 @@ namespace Whiskers.Combat.Interactions
         public OpposingCollision Collision { get; }
         public DamageResolver Damage { get; }
 
-        public InteractionResolver(BattlefieldObjectRegistry registry, DamageResolver damage)
+        public InteractionResolver(BattlefieldObjectRegistry registry, DamageResolver damage, InteractionGraph graph = null)
         {
             this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
             Damage = damage ?? throw new ArgumentNullException(nameof(damage));
+            this.graph = graph;
             Combination = new AlliedCombination(registry);
             Collision = new OpposingCollision(registry);
         }
@@ -31,6 +35,7 @@ namespace Whiskers.Combat.Interactions
         public void BeginRoll()
         {
             attackedThisRoll.Clear();
+            graph?.ResetResolved();
         }
 
         public bool HasAttackedThisRoll(BattlefieldObject battlefieldObject)
@@ -56,8 +61,16 @@ namespace Whiskers.Combat.Interactions
                 ? Combine(first, second)
                 : Collide(first, second);
 
+            // Does nothing when the pair's edge is already gone because one of them was removed or merged
+            graph?.MarkResolved(first.Id, second.Id);
+
             EventBus.Publish(new InteractionResolvedEvent(result));
             return result;
+        }
+
+        public bool CanDealDirectHit(BattlefieldObject attacker)
+        {
+            return attacker != null && IsActive(attacker);
         }
 
         // Object with nobody to collide with

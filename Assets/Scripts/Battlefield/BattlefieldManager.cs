@@ -9,12 +9,9 @@ namespace Whiskers.Battlefield
     // Board size = tray floor size.
     public sealed class BattlefieldManager : Singleton<BattlefieldManager>
     {
-        [SerializeField] private TerritoryAxis territoryAxis = TerritoryAxis.Horizontal;
-
-        [SerializeField, Range(0f, 1f)] private float startingPlayerShare = 0.5f;
-
-        [SerializeField, Range(0f, 1f)] private float minPlayerShare = 0.2f;
-        [SerializeField, Range(0f, 1f)] private float maxPlayerShare = 0.8f;
+        [Header("Debug")]
+        [SerializeField] private bool drawInteractionGraph = true;
+        [SerializeField] private bool drawEdgeDistances = true;
 
         // Null until the DiceRoll scene is loaded
         public BattlefieldBoard Board { get; private set; }
@@ -24,6 +21,10 @@ namespace Whiskers.Battlefield
         {
             EventBus.Subscribe<DiceRollStageReadyEvent>(OnStageReady);
             EventBus.Subscribe<DieSettledEvent>(OnDieSettled);
+            EventBus.Subscribe<BattlefieldObjectRegisteredEvent>(OnObjectRegistered);
+            EventBus.Subscribe<BattlefieldObjectMovedEvent>(OnObjectMoved);
+            EventBus.Subscribe<BattlefieldObjectRemovedEvent>(OnObjectRemoved);
+            EventBus.Subscribe<BattlefieldObjectsMergedEvent>(OnObjectsMerged);
 
             if (DiceRollStage.Instance != null)
             {
@@ -35,6 +36,10 @@ namespace Whiskers.Battlefield
         {
             EventBus.Unsubscribe<DiceRollStageReadyEvent>(OnStageReady);
             EventBus.Unsubscribe<DieSettledEvent>(OnDieSettled);
+            EventBus.Unsubscribe<BattlefieldObjectRegisteredEvent>(OnObjectRegistered);
+            EventBus.Unsubscribe<BattlefieldObjectMovedEvent>(OnObjectMoved);
+            EventBus.Unsubscribe<BattlefieldObjectRemovedEvent>(OnObjectRemoved);
+            EventBus.Unsubscribe<BattlefieldObjectsMergedEvent>(OnObjectsMerged);
         }
 
         public void ResetForCombat()
@@ -54,20 +59,62 @@ namespace Whiskers.Battlefield
                 return;
             }
 
-            BattlefieldTerritory territory = new BattlefieldTerritory(territoryAxis, startingPlayerShare, minPlayerShare, maxPlayerShare);
-            Board = new BattlefieldBoard(tray.FloorSize, territory);
+            Board = new BattlefieldBoard(tray.FloorSize);
             EventBus.Publish(new BattlefieldReadyEvent(Board));
         }
 
         private void OnDieSettled(DieSettledEvent settled)
         {
+            if (!IsReady)
+            {
+                Debug.LogWarning($"Die {settled.Result.Die?.Id} settled before the battlefield board was created; it was not registered.");
+                return;
+            }
+
             DieRollResult result = settled.Result;
             Board.RegisterRolledDie(result.Die, result.Face, result.Owner, result.NormalizedPosition);
         }
 
-        private void OnValidate()
+        // The graph follows the registry: it only changes in response to these events
+
+        private void OnObjectRegistered(BattlefieldObjectRegisteredEvent registered)
         {
-            maxPlayerShare = Mathf.Max(maxPlayerShare, minPlayerShare);
+            if (IsReady)
+            {
+                Board.Graph.AddNode(registered.Object);
+            }
+        }
+
+        private void OnObjectMoved(BattlefieldObjectMovedEvent moved)
+        {
+            if (IsReady)
+            {
+                Board.Graph.UpdatePosition(moved.Object.Id);
+            }
+        }
+
+        private void OnObjectRemoved(BattlefieldObjectRemovedEvent removed)
+        {
+            if (IsReady)
+            {
+                Board.Graph.RemoveNode(removed.Object.Id);
+            }
+        }
+
+        private void OnObjectsMerged(BattlefieldObjectsMergedEvent merged)
+        {
+            if (IsReady)
+            {
+                Board.Graph.ReplaceNodes(merged.MergedObjects, merged.Result);
+            }
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (drawInteractionGraph && IsReady && DiceRollStage.Instance != null)
+            {
+                InteractionGraphGizmos.Draw(Board, DiceRollStage.Instance.Tray, drawEdgeDistances);
+            }
         }
     }
 

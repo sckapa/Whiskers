@@ -13,12 +13,18 @@ MonoBehaviour:
   m_Name: PlayerDefinition
   m_EditorClassIdentifier: Assembly-CSharp::Whiskers.Combatants.Definitions.PlayerDefinition
   displayName: Player
+  visuals:
+    sprite: {fileID: 0}
+    animator: {fileID: 0}
+    flipX: 0
+    scale: 1
   maxHealth: 50
   dicePerRoll: 5
   startingDice:
-  - {fileID: 11400000, guid: bd285ed216b500a4580d4cd8a44fc375, type: 2}
-  - {fileID: 11400000, guid: 8d9f7896f47796c45adb48d93e3d84fa, type: 2}
-  - {fileID: 11400000, guid: fd9114dba27db17409218d6442214cb2, type: 2}
+  - {fileID: 11400000, guid: b404f84cb0c62c44c8c196f8b1328b44, type: 2}
+  - {fileID: 11400000, guid: b404f84cb0c62c44c8c196f8b1328b44, type: 2}
+  - {fileID: 11400000, guid: b404f84cb0c62c44c8c196f8b1328b44, type: 2}
   - {fileID: 11400000, guid: 3c2b6c979f3a6a645a8ea658eced8856, type: 2}
   - {fileID: 11400000, guid: 02042fa01f47e57489579e658cca317f, type: 2}
   - {fileID: 11400000, guid: b404f84cb0c62c44c8c196f8b1328b44, type: 2}
+  passiveEffects: []

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Whiskers.Battlefield;
 using Whiskers.Combat.Interactions;
+using Whiskers.Core;
 using Whiskers.Core.Events;
 using Whiskers.Dice;
 using Whiskers.Dice.Rolling;
@@ -62,12 +63,14 @@ namespace Whiskers.Combat.Presentation
         {
             EventBus.Subscribe<CombatStartedEvent>(OnCombatStarted);
             EventBus.Subscribe<CombatEndedEvent>(OnCombatEnded);
+            EventBus.Subscribe<BattlefieldObjectValueChangedEvent>(OnValueChanged);
         }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<CombatStartedEvent>(OnCombatStarted);
             EventBus.Unsubscribe<CombatEndedEvent>(OnCombatEnded);
+            EventBus.Unsubscribe<BattlefieldObjectValueChangedEvent>(OnValueChanged);
         }
 
         private void Update()
@@ -92,7 +95,22 @@ namespace Whiskers.Combat.Presentation
             finished?.ForEach(StopSpinning);
         }
 
+        // Holds the PresentationGate while playing, so the scene is not left in the middle of it
         public IEnumerator Play(InteractionResult result)
+        {
+            PresentationGate.Begin();
+
+            try
+            {
+                yield return PlaySteps(result);
+            }
+            finally
+            {
+                PresentationGate.End();
+            }
+        }
+
+        private IEnumerator PlaySteps(InteractionResult result)
         {
             if (DiceRollStage.Instance == null || BattlefieldManager.Instance == null || !BattlefieldManager.Instance.IsReady)
             {
@@ -360,6 +378,19 @@ namespace Whiskers.Combat.Presentation
             foreach (RollingDie die in dice)
             {
                 Thrower.RemoveDie(die.View.Die);
+            }
+        }
+
+        // Buffs and debuffs from phases 1-2 show right away. During phase 3 the collision animation shows the value itself.
+        private void OnValueChanged(BattlefieldObjectValueChangedEvent changed)
+        {
+            CombatManager combat = CombatManager.Instance;
+            bool isEffectPhase = combat != null
+                && (combat.Phase == CombatPhase.LandingEffects || combat.Phase == CombatPhase.StartEffects);
+
+            if (isEffectPhase && changed.Object.IsNumerical)
+            {
+                ShowRemainingValue(changed.Object);
             }
         }
 

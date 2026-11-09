@@ -53,15 +53,15 @@ MonoBehaviour:
     symbol: 0
     glyphColor: 0
   - type: 0
-    value: 0
+    value: 10
     symbol: 0
     glyphColor: 0
   - type: 0
-    value: 0
+    value: 11
     symbol: 0
     glyphColor: 0
   - type: 0
-    value: 0
+    value: 12
     symbol: 0
     glyphColor: 0
   capFace:

@@ -1,24 +1,20 @@
 using TMPro;
 using UnityEngine;
 using Whiskers.Combatants;
-using Whiskers.Core;
 using Whiskers.Core.Events;
 
 namespace Whiskers.Combat.Presentation
 {
-    // HP text for one side
-    // TODO(art): HP bar
+    // HP text for one side, punches when HP changes. Shows DisplayedHealth (waits for damage flights).
     [RequireComponent(typeof(TMP_Text))]
-    public sealed class CombatantHealthLabel : MonoBehaviour
+    public sealed class CombatantHealthLabel : CombatantBoundView
     {
         private const string HealthFormat = "{0} / {1}";
 
-        [SerializeField] private CombatSide side = CombatSide.Player;
         [SerializeField, Min(0f)] private float punchScale = 1.25f;
         [SerializeField, Min(0.01f)] private float punchDuration = 0.25f;
 
         private TMP_Text label;
-        private Combatant combatant;
         private Vector3 baseScale;
         private float punchTime = float.PositiveInfinity;
 
@@ -28,16 +24,16 @@ namespace Whiskers.Combat.Presentation
             baseScale = transform.localScale;
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
-            EventBus.Subscribe<CombatStartedEvent>(OnCombatStarted);
-            EventBus.Subscribe<CombatantHealthChangedEvent>(OnHealthChanged);
+            EventBus.Subscribe<DisplayedHealthChangedEvent>(OnHealthChanged);
+            base.OnEnable();
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
-            EventBus.Unsubscribe<CombatStartedEvent>(OnCombatStarted);
-            EventBus.Unsubscribe<CombatantHealthChangedEvent>(OnHealthChanged);
+            base.OnDisable();
+            EventBus.Unsubscribe<DisplayedHealthChangedEvent>(OnHealthChanged);
         }
 
         private void Update()
@@ -47,20 +43,20 @@ namespace Whiskers.Combat.Presentation
                 return;
             }
 
-            punchTime += Time.deltaTime;
+            // Unscaled, so the punch finishes even if the game is paused right after a hit
+            punchTime += Time.unscaledDeltaTime;
             float progress = Mathf.Clamp01(punchTime / punchDuration);
             transform.localScale = baseScale * Mathf.Lerp(punchScale, 1f, progress);
         }
 
-        private void OnCombatStarted(CombatStartedEvent started)
+        protected override void OnBound()
         {
-            combatant = side == CombatSide.Player ? started.Player : (Combatant)started.Enemy;
             Refresh();
         }
 
-        private void OnHealthChanged(CombatantHealthChangedEvent changed)
+        private void OnHealthChanged(DisplayedHealthChangedEvent changed)
         {
-            if (changed.Combatant != combatant)
+            if (!IsMine(changed.Combatant))
             {
                 return;
             }
@@ -71,7 +67,7 @@ namespace Whiskers.Combat.Presentation
 
         private void Refresh()
         {
-            label.text = string.Format(HealthFormat, combatant.Health.Current, combatant.Health.Max);
+            label.text = string.Format(HealthFormat, DisplayedHealth.Get(Combatant), Combatant.Health.Max);
         }
     }
 }

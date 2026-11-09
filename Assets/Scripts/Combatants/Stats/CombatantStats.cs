@@ -1,5 +1,13 @@
+using System;
+
 namespace Whiskers.Combatants.Stats
 {
+    // Serialized in effect assets, add new values at the end
+    public enum CombatantStatType
+    {
+        DicePerRoll
+    }
+
     // Combat-related stats of a combatant. New stats are added here as mechanics require them.
     public sealed class CombatantStats
     {
@@ -11,6 +19,17 @@ namespace Whiskers.Combatants.Stats
         public CombatantStats(int baseDicePerRoll)
         {
             DicePerRoll = new Stat(baseDicePerRoll, MinimumDicePerRoll);
+        }
+
+        public Stat Get(CombatantStatType type)
+        {
+            switch (type)
+            {
+                case CombatantStatType.DicePerRoll:
+                    return DicePerRoll;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown stat.");
+            }
         }
 
         // Clears everything an item, passive or effect has granted, e.g. when it is unequipped

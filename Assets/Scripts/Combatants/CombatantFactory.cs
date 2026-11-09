@@ -12,23 +12,31 @@ namespace Whiskers.Combatants
         {
             ValidateArguments(definition, createDice);
 
-            return new PlayerCombatant(
+            PlayerCombatant player = new PlayerCombatant(
                 definition.DisplayName,
                 definition.MaxHealth,
                 definition.DicePerRoll,
-                CreateStartingDice(definition, createDice));
+                CreateStartingDice(definition, createDice),
+                definition.PassiveEffects);
+
+            player.Visuals = definition.Visuals;
+            return player;
         }
 
         public static EnemyCombatant CreateEnemy(EnemyDefinition definition, Func<DiceDefinition, DiceInstance> createDice)
         {
             ValidateArguments(definition, createDice);
 
-            return new EnemyCombatant(
+            EnemyCombatant enemy = new EnemyCombatant(
                 definition.DisplayName,
                 definition.Tier,
                 definition.MaxHealth,
                 definition.DicePerRoll,
-                CreateStartingDice(definition, createDice));
+                CreateStartingDice(definition, createDice),
+                definition.PassiveEffects);
+
+            enemy.Visuals = definition.Visuals;
+            return enemy;
         }
 
         private static List<DiceInstance> CreateStartingDice(CombatantDefinition definition, Func<DiceDefinition, DiceInstance> createDice)

@@ -6,15 +6,17 @@ using Whiskers.Dice;
 
 namespace Whiskers.Battlefield
 {
-    // Shared board: size, territories and objects on it.
+    // Shared board: size and objects on it.
     // Board units, (0, 0) is bottom-left.
     public sealed class BattlefieldBoard
     {
         public Vector2 Size { get; }
-        public BattlefieldTerritory Territory { get; }
         public BattlefieldObjectRegistry Objects { get; } = new BattlefieldObjectRegistry();
 
-        public BattlefieldBoard(Vector2 size, BattlefieldTerritory territory)
+        // Possible interactions between the active objects. Kept up to date by BattlefieldManager.
+        public InteractionGraph Graph { get; } = new InteractionGraph();
+
+        public BattlefieldBoard(Vector2 size)
         {
             if (size.x <= 0f || size.y <= 0f)
             {
@@ -22,7 +24,6 @@ namespace Whiskers.Battlefield
             }
 
             Size = size;
-            Territory = territory ?? throw new ArgumentNullException(nameof(territory));
         }
 
         // 0..1 -> board units, clamped
@@ -47,11 +48,6 @@ namespace Whiskers.Battlefield
             return Objects.RegisterDie(die, rolledFace, owner, FromNormalized(normalizedPosition));
         }
 
-        public CombatSide GetTerritoryOwner(Vector2 boardPosition)
-        {
-            return Territory.GetOwnerAt(ToNormalized(boardPosition));
-        }
-
         // Active object that contains the die
         public bool TryGetObjectForDie(int dieId, out BattlefieldObject found)
         {
@@ -73,21 +69,75 @@ namespace Whiskers.Battlefield
             return FindActive(candidate => candidate.Owner == owner);
         }
 
-        public List<BattlefieldObject> GetObjectsInTerritory(CombatSide territoryOwner)
-        {
-            return FindActive(candidate => GetTerritoryOwner(candidate.Position) == territoryOwner);
-        }
-
         public List<BattlefieldObject> GetObjectsInArea(Rect boardArea)
         {
             return FindActive(candidate => boardArea.Contains(candidate.Position));
+        }
+
+        // Board units. Objects exactly at the radius are included.
+        public List<BattlefieldObject> GetObjectsInRadius(Vector2 boardPosition, float radius)
+        {
+            float sqrRadius = radius * radius;
+            return FindActive(candidate => Vector2.SqrMagnitude(candidate.Position - boardPosition) <= sqrRadius);
+        }
+
+        // Closest active object to a board position. exclude is skipped, so an object can look for its neighbour.
+        public bool TryGetNearestObject(Vector2 boardPosition, out BattlefieldObject nearest, BattlefieldObject exclude = null)
+        {
+            nearest = null;
+            float bestSqrDistance = float.PositiveInfinity;
+
+            foreach (BattlefieldObject candidate in Objects.ActiveObjects)
+            {
+                if (candidate == exclude)
+                {
+                    continue;
+                }
+
+                float sqrDistance = Vector2.SqrMagnitude(candidate.Position - boardPosition);
+
+                // Strict comparison keeps the lowest id on ties (ActiveObjects is sorted by id)
+                if (sqrDistance < bestSqrDistance)
+                {
+                    bestSqrDistance = sqrDistance;
+                    nearest = candidate;
+                }
+            }
+
+            return nearest != null;
+        }
+
+        // Closest active object of the other side, e.g. for "stun the nearest rat die". Ties: lowest id.
+        public bool TryGetNearestOpposing(BattlefieldObject source, out BattlefieldObject nearest)
+        {
+            nearest = null;
+
+            if (source == null)
+            {
+                return false;
+            }
+
+            float bestSqrDistance = float.PositiveInfinity;
+
+            foreach (BattlefieldObject candidate in Objects.ActiveObjects)
+            {
+                float sqrDistance = Vector2.SqrMagnitude(candidate.Position - source.Position);
+
+                if (source.IsOpposing(candidate) && sqrDistance < bestSqrDistance)
+                {
+                    bestSqrDistance = sqrDistance;
+                    nearest = candidate;
+                }
+            }
+
+            return nearest != null;
         }
 
         // Between combats
         public void Clear()
         {
             Objects.Clear();
-            Territory.Reset();
+            Graph.Clear();
         }
 
         private List<BattlefieldObject> FindActive(Predicate<BattlefieldObject> match)

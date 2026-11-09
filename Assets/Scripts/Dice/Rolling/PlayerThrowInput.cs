@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using Whiskers.Core;
 using Whiskers.Core.Events;
 
 namespace Whiskers.Dice.Rolling
@@ -40,9 +42,15 @@ namespace Whiskers.Dice.Rolling
 
             Vector2 screenPosition = pointer.position.ReadValue();
 
+            // Paused: an aim in progress is kept and continues on resume, new aims can't start
+            if (GamePause.IsPaused)
+            {
+                return;
+            }
+
             if (!isAiming)
             {
-                if (pointer.press.wasPressedThisFrame && display.TryGetNormalizedPoint(screenPosition, boardCamera, out Vector2 point))
+                if (pointer.press.wasPressedThisFrame && !IsPointerOverUI() && display.TryGetNormalizedPoint(screenPosition, boardCamera, out Vector2 point))
                 {
                     TryBeginAim(point);
                 }
@@ -60,6 +68,13 @@ namespace Whiskers.Dice.Rolling
             {
                 EndAim();
             }
+        }
+
+        // Clicks on buttons (pause etc.) must not start a throw
+        private static bool IsPointerOverUI()
+        {
+            EventSystem eventSystem = EventSystem.current;
+            return eventSystem != null && eventSystem.IsPointerOverGameObject();
         }
 
         private static bool CanAim()
