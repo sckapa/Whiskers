@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 110596361}
   - component: {fileID: 110596363}
   - component: {fileID: 110596362}
+  - component: {fileID: 110596364}
   m_Layer: 5
   m_Name: Ribbon
   m_TagString: Untagged
@@ -194,6 +195,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 110596360}
   m_CullTransparentMesh: 1
+--- !u!114 &110596364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110596360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9ed6e79620286146ae35b087d6ee2bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Whiskers.UI.PixelBob
+  pattern: 00000000010000000200000000000000
+  stepSeconds: 0.2
+  pixelSize: 8
+  delaySteps: 0
 --- !u!1 &250320949
 GameObject:
   m_ObjectHideFlags: 0
@@ -924,6 +941,7 @@ GameObject:
   - component: {fileID: 746491521}
   - component: {fileID: 746491523}
   - component: {fileID: 746491522}
+  - component: {fileID: 746491524}
   m_Layer: 5
   m_Name: Logo
   m_TagString: Untagged
@@ -988,6 +1006,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 746491520}
   m_CullTransparentMesh: 1
+--- !u!114 &746491524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746491520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9ed6e79620286146ae35b087d6ee2bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Whiskers.UI.PixelBob
+  pattern: 00000000010000000200000000000000
+  stepSeconds: 0.2
+  pixelSize: 8
+  delaySteps: 0
 --- !u!1 &759188660
 GameObject:
   m_ObjectHideFlags: 0
@@ -999,6 +1033,7 @@ GameObject:
   - component: {fileID: 759188661}
   - component: {fileID: 759188663}
   - component: {fileID: 759188662}
+  - component: {fileID: 759188664}
   m_Layer: 5
   m_Name: RibbonLabelShadow
   m_TagString: Untagged
@@ -1125,6 +1160,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 759188660}
   m_CullTransparentMesh: 1
+--- !u!114 &759188664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759188660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9ed6e79620286146ae35b087d6ee2bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Whiskers.UI.PixelBob
+  pattern: 00000000010000000200000000000000
+  stepSeconds: 0.2
+  pixelSize: 8
+  delaySteps: 0
 --- !u!1 &899939350
 GameObject:
   m_ObjectHideFlags: 0
@@ -1379,6 +1430,7 @@ GameObject:
   - component: {fileID: 1799648305}
   - component: {fileID: 1799648307}
   - component: {fileID: 1799648306}
+  - component: {fileID: 1799648308}
   m_Layer: 5
   m_Name: RibbonLabel
   m_TagString: Untagged
@@ -1505,6 +1557,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1799648304}
   m_CullTransparentMesh: 1
+--- !u!114 &1799648308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1799648304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9ed6e79620286146ae35b087d6ee2bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Whiskers.UI.PixelBob
+  pattern: 00000000010000000200000000000000
+  stepSeconds: 0.2
+  pixelSize: 8
+  delaySteps: 0
 --- !u!1 &1814392143
 GameObject:
   m_ObjectHideFlags: 0

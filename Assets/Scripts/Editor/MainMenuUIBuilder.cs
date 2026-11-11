@@ -77,10 +77,10 @@ namespace Whiskers.Editor
         private const float VersionInkTop = 1040f;
 
         // Title bob: heights in art pixels, one entry per step
-        private static readonly int[] TitleBobPattern = { 0, 1, 1, 0 };
-        private const float TitleBobStepSeconds = 0.3f;
+        private static readonly int[] TitleBobPattern = { 0, 1, 2, 0 };
+        private const float TitleBobStepSeconds = 0.2f;
         private const float ArtPixelSize = 8f;
-        private const int TitleRibbonDelaySteps = 1;
+        private const int TitleRibbonDelaySteps = 0;
 
         // Ink sizes from the reference, used to check the font assets render on the pixel grid
         private static readonly Vector2 RibbonInkSize = new Vector2(552f, 40f);
