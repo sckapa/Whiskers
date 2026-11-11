@@ -76,6 +76,12 @@ namespace Whiskers.Editor
         private const float VersionInkRight = 1780f;
         private const float VersionInkTop = 1040f;
 
+        // Title bob: heights in art pixels, one entry per step
+        private static readonly int[] TitleBobPattern = { 0, 1, 1, 0 };
+        private const float TitleBobStepSeconds = 0.3f;
+        private const float ArtPixelSize = 8f;
+        private const int TitleRibbonDelaySteps = 1;
+
         // Ink sizes from the reference, used to check the font assets render on the pixel grid
         private static readonly Vector2 RibbonInkSize = new Vector2(552f, 40f);
         private static readonly Vector2 NewRunInkSize = new Vector2(368f, 40f);
@@ -340,6 +346,12 @@ namespace Whiskers.Editor
             ConfigureText(ribbonLabel, RibbonText, boldFont, LargeFontSize, Cream, HorizontalAlignmentOptions.Center);
             PlaceByInk(ribbonLabel, CanvasRect, InkAlign.Center, CanvasRect.center.x, RibbonLabelInkTop, RibbonInkSize);
 
+            // Logo bobs first, the ribbon and its text follow a step behind like a hanging sign
+            AddTitleBob(logo.gameObject, 0);
+            AddTitleBob(ribbon.gameObject, TitleRibbonDelaySteps);
+            AddTitleBob(ribbonShadow.gameObject, TitleRibbonDelaySteps);
+            AddTitleBob(ribbonLabel.gameObject, TitleRibbonDelaySteps);
+
             Image panel = GetOrCreateImage(root, PanelName, PanelRect, sprites.Panel, Image.Type.Sliced);
 
             RectTransform container = (RectTransform)newRunButton.transform.parent;
@@ -371,6 +383,15 @@ namespace Whiskers.Editor
             {
                 order[i].SetSiblingIndex(i);
             }
+        }
+
+        private static void AddTitleBob(GameObject target, int delaySteps)
+        {
+            GetOrAdd<PixelBob>(target).Configure(
+                (int[])TitleBobPattern.Clone(),
+                TitleBobStepSeconds,
+                ArtPixelSize,
+                delaySteps);
         }
 
         private static void ConfigureScaler(Canvas canvas)
